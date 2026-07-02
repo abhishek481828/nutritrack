@@ -5,6 +5,8 @@ import { getDietRecommendation } from '../services/nutritionService';
 import { getErrorMessage } from '../utils/errorHandler';
 import EditFoodLogModal from '../components/EditFoodLogModal';
 import Spinner from '../components/Spinner';
+import PageTransition from '../components/ui/PageTransition';
+import EmptyState from '../components/ui/EmptyState';
 
 const todayISO = () => {
   const now = new Date();
@@ -287,6 +289,7 @@ const FoodLogs = () => {
   };
 
   return (
+    <PageTransition>
     <div className="page-shell">
       {toast && <div className={`save-toast save-toast--${toast.type}`}>{toast.message}</div>}
 
@@ -417,7 +420,7 @@ const FoodLogs = () => {
         {loading ? (
           <div className="page-loading-row"><Spinner /></div>
         ) : entries.length === 0 ? (
-          <div className="empty-state">No food logs for this date</div>
+          <EmptyState icon="📋" title="No logs for this day" message="Add food entries above to start tracking your meals." />
         ) : (
           <div className="meal-group-list">
             {groupedEntriesList.map(([group, logs]) => (
@@ -484,6 +487,7 @@ const FoodLogs = () => {
         onSave={handleSaveEdit}
       />
     </div>
+    </PageTransition>
   );
 };
 

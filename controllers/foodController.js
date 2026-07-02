@@ -101,7 +101,7 @@ const searchFoods = async (req, res) => {
 // @route GET /api/foods
 const getAllFoods = async (req, res) => {
   try {
-    const foods = await Food.find();
+    const foods = await Food.find().lean();
     return res.status(200).json({
       success: true,
       data: {
@@ -118,7 +118,7 @@ const getAllFoods = async (req, res) => {
 // @route GET /api/foods/:id
 const getFoodById = async (req, res) => {
   try {
-    const food = await Food.findById(req.params.id);
+    const food = await Food.findById(req.params.id).lean();
     if (!food) {
       return res.status(404).json({ success: false, message: 'Food not found' });
     }

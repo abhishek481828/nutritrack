@@ -4,8 +4,9 @@ const {
   generateMealPlan,
   calculateNutritionTargets,
   calculateRemainingIntake,
+  normalizeGoal,
+  getDietRecommendation,
 } = require('../utils/dietCalculator');
-const { getDietRecommendation } = require('../utils/dietEngine');
 const FoodLog = require('../models/FoodLog');
 const Food = require('../models/Food');
 const { getDerivedNutrition } = require('../utils/foodLogNutrition');
@@ -32,13 +33,6 @@ const toNumber = (value) => {
   return Number.isFinite(numberValue) ? numberValue : null;
 };
 
-const normalizeGoal = (goal) => {
-  if (goal === 'gain_muscle') return 'muscle_gain';
-  if (goal === 'lose_weight') return 'weight_loss';
-  if (goal === 'eat_healthy') return 'maintenance';
-  if (goal === 'maintenance' || goal === 'maintain') return 'maintenance';
-  return goal;
-};
 
 const normalizeFoodName = (name = '') => {
   const cleaned = String(name || '').trim().toLowerCase();
@@ -287,7 +281,10 @@ const calculateNutrition = async (req, res) => {
     const height = toNumber(source.height);
     const gender = String(source.gender || req.user.gender || 'male').toLowerCase();
     const activityLevel = String(source.activityLevel || req.user.activityLevel || 'moderate').toLowerCase();
-    const goal = normalizeGoal(String(source.goal || req.user.goal || 'maintain').toLowerCase());
+    let goal = normalizeGoal(String(source.goal || req.user.goal || 'maintain').toLowerCase());
+    if (goal === 'eat_healthy') {
+      goal = 'maintenance';
+    }
 
     if (!age || !weight || !height || !gender || !activityLevel || !goal) {
       return res.status(400).json({

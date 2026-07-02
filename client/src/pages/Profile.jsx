@@ -4,6 +4,7 @@ import { updateProfile, getBMI } from '../services/authService';
 import { getErrorMessage } from '../utils/errorHandler';
 import Alert from '../components/Alert';
 import Spinner from '../components/Spinner';
+import PageTransition from '../components/ui/PageTransition';
 
 const GOALS = [
   { value: 'lose_weight', label: 'Lose Weight' },
@@ -107,6 +108,7 @@ const Profile = () => {
   };
 
   return (
+    <PageTransition>
     <div className="page-shell profile-page">
       <div className="page-header card profile-page-header">
         <div>
@@ -233,6 +235,7 @@ const Profile = () => {
         </div>
       </div>
     </div>
+    </PageTransition>
   );
 };
 

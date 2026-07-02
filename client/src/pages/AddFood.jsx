@@ -5,6 +5,7 @@ import { addFoodLog, getDailyLogs } from '../services/foodLogService';
 import { getErrorMessage } from '../utils/errorHandler';
 import Alert from '../components/Alert';
 import Spinner from '../components/Spinner';
+import PageTransition from '../components/ui/PageTransition';
 
 const EMPTY_FOOD = {
   name: '',
@@ -352,6 +353,7 @@ const AddFood = () => {
   };
 
   return (
+    <PageTransition>
     <div className="page-shell">
       {toast?.message && (
         <div className={`save-toast ${toast.type === 'error' ? 'save-toast--error' : 'save-toast--success'}`} role="status">
@@ -371,7 +373,7 @@ const AddFood = () => {
 
       <div className="card page-card today-summary-card">
         <div className="today-summary-head">
-          <h2>Today\'s Intake</h2>
+          <h2>Today's Intake</h2>
           {summaryLoading && <Spinner size="sm" />}
         </div>
         <div className="today-summary-grid">
@@ -579,6 +581,7 @@ const AddFood = () => {
         </div>
       </div>
     </div>
+    </PageTransition>
   );
 };
 

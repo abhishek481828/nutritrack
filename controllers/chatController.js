@@ -238,4 +238,4 @@ const chat = (req, res) => {
   res.status(200).json({ success: true, reply });
 };
 
-module.exports = { chat };
+module.exports = { chat, generateReply };

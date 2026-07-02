@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { sendMessage } from '../services/chatService';
+import { sendAIMessage } from '../services/chatService';
 
 /* ── Markdown-lite renderer: **bold** + line breaks ─────────────────── */
 const BotText = ({ text }) => {
@@ -82,7 +82,7 @@ const Chatbot = () => {
     setLoading(true);
 
     try {
-      const res = await sendMessage(trimmed);
+      const res = await sendAIMessage(trimmed);
       const reply = res.data?.reply || 'No response received.';
       addMsg('bot', reply);
       if (!open) setUnread(n => n + 1);

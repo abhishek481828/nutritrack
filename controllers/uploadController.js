@@ -1,6 +1,7 @@
 const axios      = require('axios');
 const FormData   = require('form-data');
 const cloudinary = require('../config/cloudinary');
+const logger     = require('../utils/logger');
 
 // ─── Common food nutrition database (fallback) ──────────────────────────────
 const COMMON_FOODS_DB = {
@@ -247,7 +248,7 @@ const analyzeFood = async (req, res) => {
 
     res.status(200).json({ success: true, data: result });
   } catch (error) {
-    console.error('Upload/analyze error:', error);
+    logger.error('Upload/analyze error:', error);
     const message = error.response?.data?.message || error.message || 'Failed to analyze food';
     res.status(500).json({ success: false, message });
   }

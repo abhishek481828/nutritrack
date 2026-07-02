@@ -1,22 +1,22 @@
-// const multer = require('multer');
+const multer = require('multer');
 
-// // Use memory storage — no temp files written to disk
-// // Buffer passed directly to Cloudinary stream upload
-// const storage = multer.memoryStorage();
+// Use memory storage — no temp files written to disk
+// Buffer passed directly to Cloudinary stream upload
+const storage = multer.memoryStorage();
 
-// const fileFilter = (req, file, cb) => {
-//   const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-//   if (allowed.includes(file.mimetype)) {
-//     cb(null, true);
-//   } else {
-//     cb(new Error('Only JPEG, PNG, and WebP images are allowed'), false);
-//   }
-// };
+const fileFilter = (req, file, cb) => {
+  const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+  if (allowed.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only JPEG, PNG, and WebP images are allowed'), false);
+  }
+};
 
-// const upload = multer({
-//   storage,
-//   fileFilter,
-//   limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit
-// });
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit
+});
 
-// module.exports = upload;
+module.exports = upload;

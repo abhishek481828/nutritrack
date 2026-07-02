@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   ResponsiveContainer,
   AreaChart,
@@ -9,7 +10,7 @@ import {
   ReferenceLine,
   Legend,
 } from 'recharts';
-import EmptyState from './EmptyState';
+import EmptyState from './ui/EmptyState';
 
 // ─── Custom tooltip ────────────────────────────────────────────────
 const CustomTooltip = ({ active, payload, label }) => {
@@ -41,6 +42,7 @@ const formatLegend = (value) =>
  *   loading     — bool
  */
 const WeeklyChart = ({ data = [], calorieGoal = 0, showMacros = false, loading = false }) => {
+  const [localShowMacros, setLocalShowMacros] = useState(showMacros);
   const hasData = data.some((d) => d.calories > 0);
 
   if (loading) {
@@ -64,11 +66,22 @@ const WeeklyChart = ({ data = [], calorieGoal = 0, showMacros = false, loading =
             {calorieGoal > 0 && ` — goal: ${calorieGoal.toLocaleString()} kcal/day`}
           </p>
         </div>
-        {calorieGoal > 0 && (
-          <span className="weekly-chart-goal-badge">
-            🎯 {calorieGoal.toLocaleString()} kcal goal
-          </span>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.8rem', color: 'var(--text-muted)', cursor: 'pointer', userSelect: 'none' }}>
+            <input
+              type="checkbox"
+              checked={localShowMacros}
+              onChange={(e) => setLocalShowMacros(e.target.checked)}
+              style={{ accentColor: 'var(--success)', cursor: 'pointer' }}
+            />
+            Show Macros
+          </label>
+          {calorieGoal > 0 && (
+            <span className="weekly-chart-goal-badge">
+              🎯 {calorieGoal.toLocaleString()} kcal goal
+            </span>
+          )}
+        </div>
       </div>
 
       {!hasData ? (
@@ -78,38 +91,39 @@ const WeeklyChart = ({ data = [], calorieGoal = 0, showMacros = false, loading =
           message="Start logging food to see your weekly calorie trend."
         />
       ) : (
-        <ResponsiveContainer width="100%" height={260}>
+        <div role="img" aria-label="7-Day Calorie Trend Area Chart">
+          <ResponsiveContainer width="100%" height={260}>
           <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="calGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%"  stopColor="#4f46e5" stopOpacity={0.25} />
-                <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}    />
+                <stop offset="5%"  stopColor="var(--secondary)" stopOpacity={0.25} />
+                <stop offset="95%" stopColor="var(--secondary)" stopOpacity={0}    />
               </linearGradient>
               <linearGradient id="proGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%"  stopColor="#22c55e" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#22c55e" stopOpacity={0}   />
+                <stop offset="5%"  stopColor="var(--success)" stopOpacity={0.2} />
+                <stop offset="95%" stopColor="var(--success)" stopOpacity={0}   />
               </linearGradient>
               <linearGradient id="carbGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%"  stopColor="#3b82f6" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}   />
+                <stop offset="5%"  stopColor="var(--info)" stopOpacity={0.2} />
+                <stop offset="95%" stopColor="var(--info)" stopOpacity={0}   />
               </linearGradient>
               <linearGradient id="fatGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%"  stopColor="#f97316" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#f97316" stopOpacity={0}   />
+                <stop offset="5%"  stopColor="var(--warning)" stopOpacity={0.2} />
+                <stop offset="95%" stopColor="var(--warning)" stopOpacity={0}   />
               </linearGradient>
             </defs>
 
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" strokeOpacity={0.4} vertical={false} />
 
             <XAxis
               dataKey="day"
-              tick={{ fontSize: 12, fill: '#6b7280' }}
+              tick={{ fontSize: 11, fill: 'var(--text-muted)' }}
               axisLine={false}
               tickLine={false}
             />
 
             <YAxis
-              tick={{ fontSize: 11, fill: '#6b7280' }}
+              tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
               axisLine={false}
               tickLine={false}
               width={40}
@@ -123,14 +137,14 @@ const WeeklyChart = ({ data = [], calorieGoal = 0, showMacros = false, loading =
             {calorieGoal > 0 && (
               <ReferenceLine
                 y={calorieGoal}
-                stroke="#4f46e5"
+                stroke="var(--secondary)"
                 strokeDasharray="5 4"
                 strokeOpacity={0.5}
                 label={{
                   value: 'Goal',
                   position: 'insideTopRight',
-                  fontSize: 11,
-                  fill: '#4f46e5',
+                  fontSize: 10,
+                  fill: 'var(--secondary)',
                   dy: -4,
                 }}
               />
@@ -141,29 +155,30 @@ const WeeklyChart = ({ data = [], calorieGoal = 0, showMacros = false, loading =
               type="monotone"
               dataKey="calories"
               name="Calories"
-              stroke="#4f46e5"
+              stroke="var(--secondary)"
               strokeWidth={2.5}
               fill="url(#calGrad)"
-              dot={{ r: 3, fill: '#4f46e5', strokeWidth: 0 }}
+              dot={{ r: 3, fill: 'var(--secondary)', strokeWidth: 0 }}
               activeDot={{ r: 5 }}
             />
 
             {/* Optional macro areas */}
-            {showMacros && (
+            {localShowMacros && (
               <>
                 <Area type="monotone" dataKey="protein" name="Protein"
-                  stroke="#22c55e" strokeWidth={1.5} fill="url(#proGrad)"
+                  stroke="var(--success)" strokeWidth={1.5} fill="url(#proGrad)"
                   dot={false} />
                 <Area type="monotone" dataKey="carbs" name="Carbs"
-                  stroke="#3b82f6" strokeWidth={1.5} fill="url(#carbGrad)"
+                  stroke="var(--info)" strokeWidth={1.5} fill="url(#carbGrad)"
                   dot={false} />
                 <Area type="monotone" dataKey="fats" name="Fats"
-                  stroke="#f97316" strokeWidth={1.5} fill="url(#fatGrad)"
+                  stroke="var(--warning)" strokeWidth={1.5} fill="url(#fatGrad)"
                   dot={false} />
               </>
             )}
           </AreaChart>
-        </ResponsiveContainer>
+          </ResponsiveContainer>
+        </div>
       )}
     </div>
   );

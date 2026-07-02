@@ -1,6 +1,7 @@
 const FoodLog = require('../models/FoodLog');
 const { getAIResponse } = require('../services/aiService');
 const { toFoodLogEntryDTO } = require('../utils/foodLogNutrition');
+const { generateReply } = require('./chatController');
 
 // @desc  AI nutrition chat response using user profile + recent food logs
 // @route POST /api/chat/ai
@@ -15,6 +16,12 @@ const aiChat = async (req, res) => {
 
     if (message.trim().length > 1000) {
       return res.status(400).json({ success: false, message: 'Message too long (max 1000 chars).' });
+    }
+
+    // Fallback to rule-based assistant if AI is not configured
+    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY.includes('your_')) {
+      const reply = generateReply(message);
+      return res.status(200).json({ success: true, reply, isFallback: true });
     }
 
     const logs = await FoodLog.find({ userId: req.user._id })

@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { getDashboardSummary } from '../services/dashboardService';
 import Alert from '../components/Alert';
 import Spinner from '../components/Spinner';
+import PageTransition from '../components/ui/PageTransition';
 
 const WALKING_PACES = [
   { value: 'slow', label: 'Slow', met: 2.8 },
@@ -193,6 +194,7 @@ const Activity = () => {
   };
 
   return (
+    <PageTransition>
     <div className="page-shell activity-page">
       <div className="page-header card activity-header-card">
         <div>
@@ -415,6 +417,7 @@ const Activity = () => {
         </div>
       </div>
     </div>
+    </PageTransition>
   );
 };
 

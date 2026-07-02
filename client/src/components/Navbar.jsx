@@ -97,7 +97,7 @@ const Navbar = () => {
     : '?';
 
   return (
-    <nav className="navbar">
+    <nav className="navbar" aria-label="Global navigation">
       {/* Brand */}
       <div className="navbar-brand-wrap">
         <Link to={user ? '/dashboard' : '/login'} className="navbar-brand">
@@ -135,7 +135,7 @@ const Navbar = () => {
             <div className="navbar-utilities">
               <div className="navbar-avatar" title={user.name}>{initials}</div>
               <span className="navbar-user-name">{user.name?.split(' ')[0]}</span>
-              <button onClick={toggleTheme} className="btn-icon navbar-theme-btn" title="Toggle theme" type="button">
+              <button onClick={toggleTheme} className="btn-icon navbar-theme-btn" title="Toggle theme" aria-label="Toggle theme" type="button">
                 {theme === 'dark' ? <IconSun /> : <IconMoon />}
               </button>
               <button onClick={handleLogout} className="btn btn-sm btn-outline" type="button">
@@ -147,7 +147,7 @@ const Navbar = () => {
           <>
             <NavLink to="/login"    className={({ isActive }) => `nav-link ${isActive ? 'nav-link--active' : ''}`}>Login</NavLink>
             <NavLink to="/register" className={({ isActive }) => `nav-link ${isActive ? 'nav-link--active' : ''}`}>Register</NavLink>
-            <button onClick={toggleTheme} className="btn-icon navbar-theme-btn" title="Toggle theme" type="button">
+            <button onClick={toggleTheme} className="btn-icon navbar-theme-btn" title="Toggle theme" aria-label="Toggle theme" type="button">
               {theme === 'dark' ? <IconSun /> : <IconMoon />}
             </button>
           </>

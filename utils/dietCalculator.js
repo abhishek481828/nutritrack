@@ -186,17 +186,46 @@ const GOAL_ADJUSTMENTS = {
   maintenance: 0,
 };
 
+/**
+ * Standardizes goal values from user settings or request payloads
+ * into standard keys ('weight_loss', 'muscle_gain', 'maintenance', or custom fallback values).
+ */
 const normalizeGoal = (goal) => {
-  if (goal === 'gain_muscle') return 'muscle_gain';
-  if (goal === 'lose_weight') return 'weight_loss';
-  return goal || 'maintenance';
+  const value = String(goal || 'maintain').trim().toLowerCase();
+
+  if (value === 'gain_muscle' || value === 'muscle_gain' || value === 'gain') {
+    return 'muscle_gain';
+  }
+  if (value === 'lose_weight' || value === 'weight_loss' || value === 'loss') {
+    return 'weight_loss';
+  }
+  if (value === 'eat_healthy') {
+    return 'eat_healthy';
+  }
+  if (value === 'maintain' || value === 'maintenance') {
+    return 'maintenance';
+  }
+
+  return value;
 };
 
 const calculateBMR = ({ age, weight, height, gender }) => {
-  if (!age || !weight || !height) return 0;
+  const a = Number(age);
+  const h = Number(height);
+  const w = Number(weight);
 
-  const base = 10 * Number(weight) + 6.25 * Number(height) - 5 * Number(age);
-  return Math.round(base + (gender === 'male' ? 5 : -161));
+  if (!Number.isFinite(a) || !Number.isFinite(h) || !Number.isFinite(w) || a <= 0 || h <= 0 || w <= 0) {
+    return 0;
+  }
+
+  const base = (10 * w) + (6.25 * h) - (5 * a);
+  if (gender === 'male') {
+    return Math.round(base + 5);
+  }
+  if (gender === 'female') {
+    return Math.round(base - 161);
+  }
+  return Math.round(base); // Gender-neutral base
 };
 
 const getActivityFactor = (activityLevel) => ACTIVITY_FACTORS[activityLevel] || ACTIVITY_FACTORS.sedentary;
@@ -231,6 +260,60 @@ const calculateRemainingIntake = (targets, consumed = {}) => ({
   fat: Math.max((targets.macros?.fat || 0) - (consumed.fat || consumed.fats || 0), 0),
 });
 
+// ─── Calculations from dietEngine.js ─────────────────────────────────────────
+const GOAL_ADJUSTMENT = {
+  lose_weight: 0.8,
+  weight_loss: 0.8,
+  gain_muscle: 1.12,
+  muscle_gain: 1.12,
+  maintain: 1,
+  maintenance: 1,
+  eat_healthy: 0.95,
+};
+
+const MEAL_SPLITS = [
+  { name: 'Breakfast', ratio: 0.25, ideas: ['Oats with banana and milk', 'Egg omelette with toast'] },
+  { name: 'Lunch', ratio: 0.35, ideas: ['Grilled chicken with rice and salad', 'Dal, roti and mixed vegetables'] },
+  { name: 'Dinner', ratio: 0.3, ideas: ['Fish with vegetables', 'Paneer stir-fry with quinoa'] },
+  { name: 'Snacks', ratio: 0.1, ideas: ['Greek yogurt with nuts', 'Fruit and peanut butter'] },
+];
+
+const roundToNearestTen = (value) => Math.round(value / 10) * 10;
+
+const calculateTargetCalories = ({ age, height, weight, goal }) => {
+  const bmr = calculateBMR({ age, height, weight }); // Uses the genderless calculation
+
+  // Assume lightly active baseline for a practical default.
+  const maintenanceCalories = bmr * 1.35;
+
+  const normalizedGoal = normalizeGoal(goal);
+  const multiplier = GOAL_ADJUSTMENT[normalizedGoal] || GOAL_ADJUSTMENT.maintain;
+  const targetCalories = roundToNearestTen(maintenanceCalories * multiplier);
+
+  return {
+    bmr: Math.round(bmr),
+    maintenanceCalories: Math.round(maintenanceCalories),
+    targetCalories,
+  };
+};
+
+const buildSuggestedMeals = (targetCalories) => {
+  return MEAL_SPLITS.map((meal) => ({
+    meal: meal.name,
+    calories: Math.round(targetCalories * meal.ratio),
+    ideas: meal.ideas,
+  }));
+};
+
+const getDietRecommendation = ({ age, height, weight, goal }) => {
+  const { targetCalories } = calculateTargetCalories({ age, height, weight, goal });
+
+  return {
+    targetCalories,
+    suggestedMeals: buildSuggestedMeals(targetCalories),
+  };
+};
+
 module.exports = {
   calculateDailyCalories,
   calculateMacros,
@@ -240,4 +323,8 @@ module.exports = {
   calculateNutritionTargets,
   calculateRemainingIntake,
   getActivityFactor,
+  normalizeGoal,
+  calculateTargetCalories,
+  buildSuggestedMeals,
+  getDietRecommendation,
 };

@@ -100,7 +100,8 @@ const getDailyLogs = async (req, res) => {
 
     const logs = await FoodLog.find(filter)
       .populate('foodId', FOOD_POPULATE)
-      .sort({ time: 1, createdAt: 1 });
+      .sort({ time: 1, createdAt: 1 })
+      .lean();
 
     const entries = logs.map(toFoodLogEntryDTO);
     const totals = sumEntryTotals(entries);
@@ -141,7 +142,8 @@ const getPaginatedFoodLogs = async (req, res) => {
         .populate('foodId', FOOD_POPULATE)
         .sort({ date: -1, time: -1, createdAt: -1 })
         .skip(skip)
-        .limit(limit),
+        .limit(limit)
+        .lean(),
       FoodLog.countDocuments({ userId: req.user._id }),
     ]);
 

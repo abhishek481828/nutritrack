@@ -1,10 +1,13 @@
+import PageTransition from '../components/ui/PageTransition';
 import NutritionCoachDashboard from '../components/recommendations/NutritionCoachDashboard';
 
 const Recommendations = () => {
   return (
-    <div className="page-shell recommendations-page-shell">
-      <NutritionCoachDashboard />
-    </div>
+    <PageTransition>
+      <div className="page-shell recommendations-page-shell">
+        <NutritionCoachDashboard />
+      </div>
+    </PageTransition>
   );
 };
 

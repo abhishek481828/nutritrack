@@ -1,6 +1,7 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const Food = require('../models/Food');
+const logger = require('../utils/logger');
 
 // Connect to MongoDB
 const connectDB = async () => {
@@ -9,9 +10,9 @@ const connectDB = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log('✅ MongoDB connected for seeding');
+    logger.info('✅ MongoDB connected for seeding');
   } catch (error) {
-    console.error('❌ MongoDB connection failed:', error.message);
+    logger.error('❌ MongoDB connection failed:', error);
     process.exit(1);
   }
 };
@@ -223,7 +224,7 @@ const seedFoods = async () => {
   try {
     await connectDB();
 
-    console.log('🌾 Starting to seed Indian foods...');
+    logger.info('🌾 Starting to seed Indian foods...');
 
     let added = 0;
     let skipped = 0;
@@ -234,21 +235,21 @@ const seedFoods = async () => {
       
       if (existing) {
         skipped++;
-        console.log(`   ⏭️  Skipped: ${food.name} (already exists)`);
+        logger.debug(`   ⏭️  Skipped: ${food.name} (already exists)`);
       } else {
         await Food.create(food);
         added++;
-        console.log(`   ✅ Added: ${food.name} (${food.calories} kcal)`);
+        logger.info(`   ✅ Added: ${food.name} (${food.calories} kcal)`);
       }
     }
 
-    console.log(`\n📊 Seeding complete!`);
-    console.log(`   • Added: ${added} new foods`);
-    console.log(`   • Skipped: ${skipped} existing foods`);
+    logger.info('📊 Seeding complete!');
+    logger.info(`   • Added: ${added} new foods`);
+    logger.info(`   • Skipped: ${skipped} existing foods`);
 
     mongoose.connection.close();
   } catch (error) {
-    console.error('❌ Error seeding foods:', error.message);
+    logger.error('❌ Error seeding foods:', error);
     mongoose.connection.close();
     process.exit(1);
   }

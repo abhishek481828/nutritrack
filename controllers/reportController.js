@@ -81,7 +81,8 @@ const getWeeklyLogs = async (userId, days = 7) => {
     date: { $gte: start, $lte: end },
   })
     .populate('foodId', 'calories protein carbs fat')
-    .sort({ date: 1, time: 1, createdAt: 1 });
+    .sort({ date: 1, time: 1, createdAt: 1 })
+    .lean();
 
   // Group by date string YYYY-MM-DD
   const byDay = {};

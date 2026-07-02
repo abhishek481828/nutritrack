@@ -1,5 +1,5 @@
 import api from './api';
-import { createFood } from './foodService';
+import { createFood, getFoods } from './foodService';
 
 const normalizeEntry = (entry = {}) => {
   const food = entry.food || {};

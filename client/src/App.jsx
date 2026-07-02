@@ -1,9 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { AlertProvider } from './context/AlertContext';
 import { useAuth } from './context/AuthContext';
 import { useAlert } from './context/AlertContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { AnimatePresence } from 'framer-motion';
 import Alert from './components/Alert';
 import PrivateRoute from './components/PrivateRoute';
 import Navbar from './components/Navbar';
@@ -50,77 +51,81 @@ const RootRedirect = () => {
 };
 
 function AppContent() {
+  const location = useLocation();
+
   return (
-    <BrowserRouter>
+    <>
       <GlobalAlert />
       <Navbar />
       <main className="main-content">
-        <Routes>
-          <Route path="/" element={<RootRedirect />} />
-          <Route path="/login"    element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/add-food"
-            element={
-              <PrivateRoute>
-                <AddFood />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/upload"
-            element={
-              <PrivateRoute>
-                <FoodUpload />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/logs"
-            element={
-              <PrivateRoute>
-                <FoodLogs />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/recommendations"
-            element={
-              <PrivateRoute>
-                <Recommendations />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <PrivateRoute>
-                <Profile />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/activity"
-            element={
-              <PrivateRoute>
-                <Activity />
-              </PrivateRoute>
-            }
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<RootRedirect />} />
+            <Route path="/login"    element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <Dashboard />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/add-food"
+              element={
+                <PrivateRoute>
+                  <AddFood />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/upload"
+              element={
+                <PrivateRoute>
+                  <FoodUpload />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/logs"
+              element={
+                <PrivateRoute>
+                  <FoodLogs />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/recommendations"
+              element={
+                <PrivateRoute>
+                  <Recommendations />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/activity"
+              element={
+                <PrivateRoute>
+                  <Activity />
+                </PrivateRoute>
+              }
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AnimatePresence>
       </main>
       {/* Floating chatbot — visible on all pages when authenticated */}
       <ChatbotGuard />
-    </BrowserRouter>
+    </>
   );
 }
 
@@ -129,7 +134,9 @@ function App() {
     <AlertProvider>
       <AuthProvider>
         <ThemeProvider>
-          <AppContent />
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
         </ThemeProvider>
       </AuthProvider>
     </AlertProvider>

@@ -5,7 +5,7 @@ import { addFoodLog }  from '../services/foodLogService';
 import { createFood } from '../services/foodService';
 import { getErrorMessage } from '../utils/errorHandler';
 import Spinner         from '../components/Spinner';
-import EmptyState      from '../components/EmptyState';
+import EmptyState      from '../components/ui/EmptyState';
 
 // ─── Confidence bar ────────────────────────────────────────────────
 const ConfidenceBar = ({ probability }) => {
@@ -157,6 +157,7 @@ const FoodUpload = () => {
 
   // ── Render ─────────────────────────────────────────────────────
   return (
+    <PageTransition>
     <div className="upload-page">
 
       {/* Header */}
@@ -337,6 +338,7 @@ const FoodUpload = () => {
       )}
 
     </div>
+    </PageTransition>
   );
 };
 

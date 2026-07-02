@@ -1,4 +1,6 @@
 require('dotenv').config();
+const { validateEnv } = require('./config/env');
+validateEnv();
 const express = require('express');
 const cors    = require('cors');
 const helmet  = require('helmet');
@@ -9,6 +11,8 @@ const connectDB = require('./config/db');
 const { globalLimiter } = require('./middleware/rateLimiter');
 const errorHandler = require('./middleware/errorHandler');
 const notFound = require('./middleware/notFound');
+const logger = require('./utils/logger');
+const { setupSwagger } = require('./config/swagger');
 
 const authRoutes      = require('./routes/authRoutes');
 const foodRoutes      = require('./routes/foodRoutes');
@@ -95,6 +99,9 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', env: process.env.NODE_ENV || 'development' });
 });
 
+// ── Swagger UI ──────────────────────────────────────────────────────
+setupSwagger(app);
+
 // ── Root route ─────────────────────────────────────────────────────
 // In development, send users to the Vite frontend.
 // In production, return API status unless the client build is present on this server.
@@ -140,7 +147,5 @@ app.use(errorHandler);
 
 // ── Start ──────────────────────────────────────────────────────────
 app.listen(PORT, () => {
-  if (process.env.NODE_ENV !== 'production') {
-    console.log(`✅  Server running in development mode on port ${PORT}`);
-  }
+  logger.info(`✅ Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
 });
